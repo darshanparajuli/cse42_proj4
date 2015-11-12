@@ -1,12 +1,11 @@
 DEFAULT_BOARD_SIZE = 8
+BLACK_PIECE = 1
+WHITE_PIECE = 2
 
 
-class Piece:
+class Cell:
 
-    _BLACK_PIECE = 1
-    _WHITE_PIECE = 2
-
-    def __init__(self, row, col):
+    def __init__(self, row, col) -> None:
         self.row = row
         self.col = col
         self.piece = None
@@ -14,62 +13,139 @@ class Piece:
     def is_empty(self) -> bool:
         return self.piece == None
 
-    def is_black(self) -> bool:
-        return self.piece == Piece._BLACK_PIECE
+    def get_piece(self) -> 'piece type':
+        return self.piece
 
-    def is_white(self) -> bool:
-        return self.piece == Piece._WHITE_PIECE
+    def set_piece(self, piece) -> None:
+        self.piece = piece
 
-    def flip_to_black(self) -> None:
-        self.piece = Piece._BLACK_PIECE
+    def get_row(self) -> int:
+        return self.row
 
-    def flip_to_white(self) -> None:
-        self.piece = Piece._WHITE_PIECE
+    def get_col(self) -> int:
+        return self.col
+
+    def get_west(self) -> '(row, col)':
+        return (self.row, self.col - 1)
+
+    def get_east(self) -> '(row, col)':
+        return (self.row, self.col + 1)
+
+    def get_north(self) -> '(row, col)':
+        return (self.row - 1, self.col)
+
+    def get_south(self) -> '(row, col)':
+        return (self.row + 1, self.col)
+
+    def get_northwest(self) -> '(row, col)':
+        return (self.row - 1, self.col - 1)
+
+    def get_northeast(self) -> '(row, col)':
+        return (self.row - 1, self.col + 1)
+
+    def get_southwest(self) -> '(row, col)':
+        return (self.row + 1, self.col - 1)
+
+    def get_southeast(self) -> '(row, col)':
+        return (self.row + 1, self.col + 1)
+
+    def print(self) -> None:
+        print('r: {}, c: {}'.format(self.row, self.col))
 
 
 class OthelloBoard:
 
-    def __init__(self, board_size = DEFAULT_BOARD_SIZE, white_piece_first = False) -> None:
-        self.rows = board_size
-        self.cols = board_size
-        self.board = self._init_board(white_piece_first)
+    def __init__(self, board_size = DEFAULT_BOARD_SIZE, first_turn = BLACK_PIECE) -> None:
+        self.row_count = board_size
+        self.col_count = board_size
+        self.board = self._init_board(first_turn)
+        self.possible_valid_moves = []
 
-    def _init_board(self, white_piece_first) -> [[int]]:
-        board = [[Piece(row, col) for col in range(self.cols)] for row in range(self.rows)]
+    def _init_board(self, first_turn) -> [[int]]:
+        board = [[Cell(row, col) for col in range(self.col_count)] for row in range(self.row_count)]
 
-        x = int(self.cols / 2 - 1)
-        y = int(self.rows / 2 - 1)
-        if white_piece_first:
-            board[y][x].flip_to_black()
-            board[y][x + 1].flip_to_white()
-            board[y + 1][x].flip_to_white()
-            board[y + 1][x + 1].flip_to_black()
+        x = int(self.col_count / 2 - 1)
+        y = int(self.row_count / 2 - 1)
+        if first_turn == WHITE_PIECE:
+            board[y][x].set_piece(BLACK_PIECE)
+            board[y][x + 1].set_piece(WHITE_PIECE)
+            board[y + 1][x].set_piece(WHITE_PIECE)
+            board[y + 1][x + 1].set_piece(BLACK_PIECE)
         else:
-            board[y][x].flip_to_white()
-            board[y][x + 1].flip_to_black()
-            board[y + 1][x].flip_to_black()
-            board[y + 1][x + 1].flip_to_white()
+            board[y][x].set_piece(WHITE_PIECE)
+            board[y][x + 1].set_piece(BLACK_PIECE)
+            board[y + 1][x].set_piece(BLACK_PIECE)
+            board[y + 1][x + 1].set_piece(WHITE_PIECE)
 
         return board
 
     def print_board(self) -> None:
-        for row in self.board:
-            for piece in row:
-                cell = None
-                if piece.is_black():
-                    cell = 'B'
-                elif piece.is_white():
-                    cell = 'W'
+        for r in range(self.row_count):
+            for c in range(self.col_count):
+                cell = self.board[r][c]
+                cell_str = None
+                if cell.get_piece() == BLACK_PIECE:
+                    cell_str = 'B'
+                elif cell.get_piece() == WHITE_PIECE:
+                    cell_str = 'W'
                 else:
-                    cell = '.'
-                print(cell, end = ' ')
+                    cell_str = '.'
+                print(cell_str, end = ' ')
             print()
+
+    def get_cell(self, pos: '(row, col)') -> Cell:
+        row = pos[0]
+        col = pos[1]
+        if row >= 0 and row < self.row_count:
+            if col >= 0 and col < self.col_count:
+                return self.board[row][col]
+        return None
 
     def place_piece(self, piece_type, row, col):
         pass
 
-    def possible_valid_moves(self, piece_type) -> int:
-        for r in range(self.rows):
-            for c in range(self.cols):
-                piece = self.board[r][c]
+    def _print_possible_moves(self) -> None:
+        print('possible valid moves: ')
+        for cell in self.possible_valid_moves:
+            cell.print()
 
+    def calculate_possible_valid_moves(self, piece) -> None:
+        self.possible_valid_moves = []
+
+        for r in range(self.row_count):
+            for c in range(self.col_count):
+                cell = self.board[r][c]
+                if cell.get_piece() != piece:
+                    continue
+
+                valid_cells = []
+                valid_cells.append(self._calculate_possible_valid_moves(cell, lambda c: c.get_east()))
+                valid_cells.append(self._calculate_possible_valid_moves(cell, lambda c: c.get_west()))
+                valid_cells.append(self._calculate_possible_valid_moves(cell, lambda c: c.get_north()))
+                valid_cells.append(self._calculate_possible_valid_moves(cell, lambda c: c.get_south()))
+                valid_cells.append(self._calculate_possible_valid_moves(cell, lambda c: c.get_northeast()))
+                valid_cells.append(self._calculate_possible_valid_moves(cell, lambda c: c.get_northwest()))
+                valid_cells.append(self._calculate_possible_valid_moves(cell, lambda c: c.get_southeast()))
+                valid_cells.append(self._calculate_possible_valid_moves(cell, lambda c: c.get_southwest()))
+                for valid_cell in valid_cells:
+                    if valid_cell != None:
+                        self.possible_valid_moves.append(valid_cell)
+
+        self._print_possible_moves()
+
+    def _calculate_possible_valid_moves(self, cell, dir_function) -> Cell:
+        stack = []
+        west = self.get_cell(dir_function(cell))
+        while west != None:
+            if west.is_empty():
+                stack.append(west)
+                break
+            elif west.get_piece() != cell.get_piece():
+                stack.append(west)
+
+            west = self.get_cell(dir_function(west))
+
+        if len(stack) > 1:
+            top = stack[-1]
+            if top.is_empty():
+                return top
