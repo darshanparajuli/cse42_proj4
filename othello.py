@@ -132,13 +132,13 @@ class OthelloBoard:
                 return self.board[row][col]
         return None
 
-    def get_opponent_piece_type(self, piece_type) -> 'piece type':
+    def get_opponent_piece_type(self, piece_type: 'piece type') -> 'piece type':
         if piece_type == BLACK_PIECE:
             return WHITE_PIECE
         else:
             return BLACK_PIECE
 
-    def place_piece(self, piece_type, row, col) -> bool:
+    def place_piece(self, piece_type: 'piece type', row: int, col: int) -> bool:
         key = self._flatten_row_col(row, col)
         if key in self.possible_valid_moves:
             self.board[row][col].set_piece(piece_type)
@@ -263,21 +263,21 @@ class OthelloBoard:
         return possible_valid_moves
 
     def _get_possible_valid_moves(self, cell, dir_function) -> '(valid cell, marked cells)':
-        stack = []
+        captured_cells = []
         west = self._get_cell(dir_function(cell))
         piece_type = cell.get_piece()
         while west != None:
             if west.is_empty():
-                stack.append(west)
+                captured_cells.append(west)
                 break
             if west.get_piece() == piece_type:
                 break
 
             if west.get_piece() != piece_type:
-                stack.append(west)
+                captured_cells.append(west)
             west = self._get_cell(dir_function(west))
 
-        if len(stack) > 1:
-            top = stack.pop()
+        if len(captured_cells) > 1:
+            top = captured_cells.pop()
             if top.is_empty():
-                return top, stack
+                return top, captured_cells
