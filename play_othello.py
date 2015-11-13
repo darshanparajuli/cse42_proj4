@@ -39,7 +39,13 @@ def play_game(game: 'Othello game board', first_player: 'piece type') -> None:
         print('TURN: {}'.format(players[current_player]))
 
         while True:
-            player_move = utils.get_player_move()
+            player_move = None
+            if current_player == othello.BLACK_PIECE:
+                row, col = game.get_ai_move(current_player)
+                player_move = row + 1, col + 1
+            else:
+                player_move = utils.get_player_move()
+
             if player_move != None:
                 row, col = player_move
                 if game.place_piece(current_player, row - 1, col - 1):

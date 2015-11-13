@@ -1,3 +1,7 @@
+# For debug purposes
+import random
+
+
 BLACK_PIECE = 1
 WHITE_PIECE = 2
 
@@ -66,6 +70,9 @@ class OthelloBoard:
         self.possible_valid_moves = self._calculate_possible_valid_moves(first_turn)
         self.piece_count = self._get_piece_count()
 
+        # For debug purposes
+        self.print_row_col_labels = True
+
     def _init_board(self, top_left) -> [[int]]:
         board = [[Cell(row, col) for col in range(self.col_count)] for row in range(self.row_count)]
 
@@ -85,12 +92,14 @@ class OthelloBoard:
         return board
 
     def print_board(self) -> None:
-        print(' ', end = ' ')
-        for c in range(self.col_count):
-            print(str(c + 1), end = ' ')
-        print()
+        if self.print_row_col_labels:
+            print(' '.ljust(len(str(self.row_count))), end = ' ')
+            for c in range(self.col_count):
+                print(str(c + 1).ljust(len(str(self.col_count))), end = ' ')
+            print()
         for r in range(self.row_count):
-            print('{}'.format(r + 1), end = ' ')
+            if self.print_row_col_labels:
+                print('{}'.format(r + 1).ljust(len(str(self.row_count))), end = ' ')
             for c in range(self.col_count):
                 cell = self.board[r][c]
                 cell_str = None
@@ -100,7 +109,13 @@ class OthelloBoard:
                     cell_str = 'W'
                 else:
                     cell_str = '.'
-                print(cell_str, end = ' ')
+
+                ljust_val = None
+                if self.print_row_col_labels:
+                    ljust_val = len(str(self.col_count))
+                else:
+                    ljust_val = 0
+                print(cell_str.ljust(ljust_val), end = ' ')
             print()
 
     def _get_cell(self, pos: '(row, col)') -> Cell:
@@ -194,6 +209,13 @@ class OthelloBoard:
 
     def _flatten_row_col(self, row: int, col: int) -> int:
         return row * self.col_count + col
+
+    # For debug purposes... and for fun xD
+    def get_ai_move(self, piece_type: 'piece type') -> '(row, col)':
+        possible_valid_moves = self._calculate_possible_valid_moves(piece_type)
+        keys = list(possible_valid_moves.keys())
+        valid_cell = possible_valid_moves[keys[random.randint(0, len(keys) - 1)]][0]
+        return valid_cell.get_row(), valid_cell.get_col()
 
     def _calculate_possible_valid_moves(self, piece) -> dict:
         possible_valid_moves = {}
