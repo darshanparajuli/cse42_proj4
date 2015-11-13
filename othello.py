@@ -55,8 +55,14 @@ class Cell:
     def get_southeast(self) -> '(row, col)':
         return (self.row + 1, self.col + 1)
 
-    def to_str(self) -> None:
+    def __str__(self) -> None:
         return 'r: {}, c: {}'.format(self.row, self.col)
+
+    def __eq__(self, other):
+        return other and self.row == other.row and self.col == other.col and self.piece == other.piece
+
+    def __hash__(self):
+        return hash(self.row) ^ hash(self.col) ^ hash(self.piece)
 
 
 class OthelloBoard:
@@ -137,8 +143,8 @@ class OthelloBoard:
         if key in self.possible_valid_moves:
             self.board[row][col].set_piece(piece_type)
 
-            for marked_cell in self.possible_valid_moves[key][1]:
-                marked_cell.set_piece(piece_type)
+            for captured_cell in self.possible_valid_moves[key][1]:
+                captured_cell.set_piece(piece_type)
 
             self.piece_count = self._get_piece_count()
             self.skip_player_move(piece_type)
@@ -198,11 +204,11 @@ class OthelloBoard:
     def _print_possible_moves(possible_valid_moves) -> None:
         print('possible valid moves: ')
         for key in possible_valid_moves.keys():
-            valid_cell, marked_cells = possible_valid_moves[key]
-            print(valid_cell.to_str())
+            valid_cell, captured_cells = possible_valid_moves[key]
+            print(str(valid_cell))
 
-            for marked_cell in marked_cells:
-                print('    {}'.format(marked_cell.to_str()))
+            for captured_cell in captured_cells:
+                print('    {}'.format(str(captured_cell)))
 
     def _get_flattened_cell_pos(self, cell: Cell) -> int:
         return self._flatten_row_col(cell.get_row(), cell.get_col())
@@ -214,7 +220,15 @@ class OthelloBoard:
     def get_ai_move(self, piece_type: 'piece type') -> '(row, col)':
         possible_valid_moves = self._calculate_possible_valid_moves(piece_type)
         keys = list(possible_valid_moves.keys())
-        valid_cell = possible_valid_moves[keys[random.randint(0, len(keys) - 1)]][0]
+        keys.sort(key=lambda k: len(possible_valid_moves[k][1]), reverse=True)
+        keys_highest_captures = []
+        highest_captures = len(possible_valid_moves[keys[0]][1])
+        for k in keys:
+            if len(possible_valid_moves[k][1]) == highest_captures:
+                keys_highest_captures.append(k)
+        # for k in keys:
+        #     print(len(possible_valid_moves[k][1]))
+        valid_cell = possible_valid_moves[keys_highest_captures[random.randint(0, len(keys_highest_captures) - 1)]][0]
         return valid_cell.get_row(), valid_cell.get_col()
 
     def _calculate_possible_valid_moves(self, piece) -> dict:
@@ -238,13 +252,13 @@ class OthelloBoard:
 
                 for element in valid_cells:
                     if element != None:
-                        valid_cell, marked_cells = element
+                        valid_cell, captured_cells = element
                         key = self._get_flattened_cell_pos(valid_cell)
                         if key in possible_valid_moves:
-                            for marked_cell in marked_cells:
-                                possible_valid_moves[key][1].append(marked_cell)
+                            for captured_cell in captured_cells:
+                                possible_valid_moves[key][1].add(captured_cell)
                         else:
-                            possible_valid_moves[key] = (valid_cell, marked_cells)
+                            possible_valid_moves[key] = (valid_cell, set(captured_cells))
 
         return possible_valid_moves
 

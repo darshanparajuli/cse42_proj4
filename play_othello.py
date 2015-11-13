@@ -40,11 +40,14 @@ def play_game(game: 'Othello game board', first_player: 'piece type') -> None:
 
         while True:
             player_move = None
-            if current_player == othello.BLACK_PIECE:
-                row, col = game.get_ai_move(current_player)
-                player_move = row + 1, col + 1
-            else:
-                player_move = utils.get_player_move()
+            # if current_player == othello.BLACK_PIECE:
+            row, col = game.get_ai_move(current_player)
+            row += 1
+            col += 1
+            print('[AI] {} {}'.format(row, col))
+            player_move = row, col
+            # else:
+                # player_move = utils.get_player_move()
 
             if player_move != None:
                 row, col = player_move
