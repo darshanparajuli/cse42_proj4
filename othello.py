@@ -1,6 +1,3 @@
-from collections import defaultdict
-
-
 BLACK_PIECE = 1
 WHITE_PIECE = 2
 
@@ -199,7 +196,7 @@ class OthelloBoard:
         return row * self.col_count + col
 
     def _calculate_possible_valid_moves(self, piece) -> dict:
-        possible_valid_moves = defaultdict(list)
+        possible_valid_moves = {}
 
         for r in range(self.row_count):
             for c in range(self.col_count):
