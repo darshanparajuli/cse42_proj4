@@ -106,7 +106,7 @@ class OthelloBoard:
                 print(cell_str, end = ' ')
             print()
 
-    def get_cell(self, pos: '(row, col)') -> Cell:
+    def _get_cell(self, pos: '(row, col)') -> Cell:
         row = pos[0]
         col = pos[1]
         if row >= 0 and row < self.row_count:
@@ -231,7 +231,7 @@ class OthelloBoard:
 
     def _get_possible_valid_moves(self, cell, dir_function) -> '(valid cell, marked cells)':
         stack = []
-        west = self.get_cell(dir_function(cell))
+        west = self._get_cell(dir_function(cell))
         piece_type = cell.get_piece()
         while west != None:
             if west.is_empty():
@@ -242,7 +242,7 @@ class OthelloBoard:
 
             if west.get_piece() != piece_type:
                 stack.append(west)
-            west = self.get_cell(dir_function(west))
+            west = self._get_cell(dir_function(west))
 
         if len(stack) > 1:
             top = stack.pop()
