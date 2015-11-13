@@ -77,7 +77,7 @@ class OthelloBoard:
         self.piece_count = self._get_piece_count()
 
         # For debug purposes
-        self.print_row_col_labels = True
+        self.print_row_col_labels = False
 
     def _init_board(self, top_left) -> [[int]]:
         board = [[Cell(row, col) for col in range(self.col_count)] for row in range(self.row_count)]

@@ -1,5 +1,6 @@
 import othello
 import utils
+import time
 
 
 def init_game() -> 'Othello game board, first player piece type':
