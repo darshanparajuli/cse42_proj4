@@ -1,15 +1,44 @@
 import othello
-import utils
 import time
+
+
+def _get_input_in_range(min: int, max: int) -> int:
+    user_input = _get_user_input_as_int()
+    if user_input != None:
+        if user_input >= min and user_input <= max:
+            return user_input
+
+
+def _get_matching_user_input(required: 'tuple of chars') -> str:
+    user_input = input().strip()
+    if user_input in required:
+        return user_input
+
+
+def _get_player_move() -> '(row, col)':
+    user_input = input().split()
+    if type(user_input) == list and len(user_input) == 2:
+        try:
+            return int(user_input[0]), int(user_input[1])
+        except ValueError:
+            return None
+
+
+def _get_user_input_as_int() -> int:
+    user_input = input().strip()
+    try:
+        return int(user_input)
+    except ValueError:
+        return None
 
 
 def init_game() -> 'Othello game board, first player piece type':
     print('FULL')
-    row_count = utils.get_user_input_as_int(4, 16)
-    col_count = utils.get_user_input_as_int(4, 16)
-    first_turn = utils.get_user_input(('W', 'B'))
-    top_left = utils.get_user_input(('W', 'B'))
-    win_condition = utils.get_user_input(('<', '>'))
+    row_count = _get_input_in_range(4, 16)
+    col_count = _get_input_in_range(4, 16)
+    first_turn = _get_matching_user_input(('W', 'B'))
+    top_left = _get_matching_user_input(('W', 'B'))
+    win_condition = _get_matching_user_input(('<', '>'))
 
     first_player = othello.BLACK_PIECE if first_turn == 'B' else othello.WHITE_PIECE
     game = othello.OthelloBoard(row_count, col_count,
@@ -48,7 +77,7 @@ def play_game(game: 'Othello game board', first_player: 'piece type') -> None:
             print('[AI] {} {}'.format(row, col))
             player_move = row, col
             # else:
-                # player_move = utils.get_player_move()
+                # player_move = _get_player_move()
 
             if player_move != None:
                 row, col = player_move

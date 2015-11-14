@@ -79,6 +79,12 @@ class OthelloBoard:
         # For debug purposes
         self.print_row_col_labels = False
 
+    def get_row_count(self) -> int:
+        return self.row_count
+
+    def get_col_count(self) -> int:
+        return self.col_count
+
     def _init_board(self, top_left) -> [[int]]:
         board = [[Cell(row, col) for col in range(self.col_count)] for row in range(self.row_count)]
 
