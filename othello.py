@@ -73,7 +73,7 @@ class OthelloBoard:
         self.col_count = col_count
         self.board = self._init_board(top_left)
         self.high_count_wins = high_count_wins
-        self.possible_valid_moves = self._calculate_possible_valid_moves(first_turn)
+        self.possible_valid_moves = self._get_all_possible_valid_moves(first_turn)
         self.piece_count = self._get_piece_count()
 
         # For debug purposes
@@ -153,14 +153,14 @@ class OthelloBoard:
 
     def skip_player_move(self, piece_type: 'piece type') -> None:
         opponent_piece = self.get_opponent_piece_type(piece_type)
-        self.possible_valid_moves = self._calculate_possible_valid_moves(opponent_piece)
+        self.possible_valid_moves = self._get_all_possible_valid_moves(opponent_piece)
         # OthelloBoard._print_possible_moves(self.possible_valid_moves)
 
     def get_possible_valid_moves_num(self, piece_type = None) -> int:
         if piece_type == None:
             return len(self.possible_valid_moves.keys())
         else:
-            return len(self._calculate_possible_valid_moves(piece_type).keys())
+            return len(self._get_all_possible_valid_moves(piece_type).keys())
 
     def check_win(self) -> 'BLACK_PIECE, WHITE_PIECE or None':
         b_count = self.piece_count[0]
@@ -218,7 +218,7 @@ class OthelloBoard:
 
     # For debug purposes... and for fun xD
     def get_ai_move(self, piece_type: 'piece type') -> '(row, col)':
-        possible_valid_moves = self._calculate_possible_valid_moves(piece_type)
+        possible_valid_moves = self._get_all_possible_valid_moves(piece_type)
         keys = list(possible_valid_moves.keys())
         keys.sort(key=lambda k: len(possible_valid_moves[k][1]), reverse=True)
         keys_highest_captures = []
@@ -231,7 +231,7 @@ class OthelloBoard:
         valid_cell = possible_valid_moves[keys_highest_captures[random.randint(0, len(keys_highest_captures) - 1)]][0]
         return valid_cell.get_row(), valid_cell.get_col()
 
-    def _calculate_possible_valid_moves(self, piece) -> dict:
+    def _get_all_possible_valid_moves(self, piece) -> dict:
         possible_valid_moves = {}
 
         for r in range(self.row_count):
