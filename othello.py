@@ -264,18 +264,18 @@ class OthelloBoard:
 
     def _get_possible_valid_moves(self, cell, dir_function) -> '(valid cell, marked cells)':
         captured_cells = []
-        west = self._get_cell(dir_function(cell))
         piece_type = cell.get_piece()
-        while west != None:
-            if west.is_empty():
-                captured_cells.append(west)
+        temp_cell = self._get_cell(dir_function(cell))
+        while temp_cell != None:
+            if temp_cell.is_empty():
+                captured_cells.append(temp_cell)
                 break
-            if west.get_piece() == piece_type:
+            if temp_cell.get_piece() == piece_type:
                 break
 
-            if west.get_piece() != piece_type:
-                captured_cells.append(west)
-            west = self._get_cell(dir_function(west))
+            if temp_cell.get_piece() != piece_type:
+                captured_cells.append(temp_cell)
+            temp_cell = self._get_cell(dir_function(temp_cell))
 
         if len(captured_cells) > 1:
             top = captured_cells.pop()
