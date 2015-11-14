@@ -13,9 +13,6 @@ class Cell:
         self.col = col
         self.piece = None
 
-    def get_id(self) -> int:
-        return self.id
-
     def is_empty(self) -> bool:
         return self.piece == None
 
