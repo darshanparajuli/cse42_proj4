@@ -1,5 +1,5 @@
-import othello
 import time
+import othello
 
 
 def _get_input_in_range(min: int, max: int) -> int:
@@ -34,28 +34,37 @@ def _get_user_input_as_int() -> int:
 
 def init_game() -> 'Othello game board, first player piece type':
     print('FULL')
-    row_count = _get_input_in_range(4, 16)
-    col_count = _get_input_in_range(4, 16)
+    options = othello.OthelloBoardOptions()
+    options.set_row_count(_get_input_in_range(4, 16))
+    options.set_col_count(_get_input_in_range(4, 16))
+
     first_turn = _get_matching_user_input(('W', 'B'))
     top_left = _get_matching_user_input(('W', 'B'))
     win_condition = _get_matching_user_input(('<', '>'))
 
-    first_player = othello.BLACK_PIECE if first_turn == 'B' else othello.WHITE_PIECE
-    game = othello.OthelloBoard(row_count, col_count,
-            othello.BLACK_PIECE if top_left == 'B' else othello.WHITE_PIECE, win_condition == '>',
-            first_player)
-    return game, first_player
+    first_turn = othello.BLACK_PIECE if first_turn == 'B' else othello.WHITE_PIECE
+
+    options.set_first_turn(first_turn)
+    options.set_top_left_piece(othello.BLACK_PIECE if top_left == 'B' else othello.WHITE_PIECE)
+    options.set_high_count_wins(win_condition == '>')
+
+    game = othello.OthelloBoard(options)
+
+    return game, first_turn
 
 
-def play_game(game: 'Othello game board', first_player: 'piece type') -> None:
+def play_game(game: 'Othello game board', first_turn: 'piece type') -> None:
     players = {othello.BLACK_PIECE: 'B', othello.WHITE_PIECE: 'W'}
-    current_player = first_player
+    current_player = first_turn
 
     while True:
         b_count = game.get_piece_count(othello.BLACK_PIECE)
         w_count = game.get_piece_count(othello.WHITE_PIECE)
         print('B: {}  W: {}'.format(b_count, w_count))
         game.print_board()
+
+        if b_count == 0 or w_count == 0:
+            time.sleep(5)
 
         opponent = game.get_opponent_piece_type(current_player)
         if game.get_possible_valid_moves_num() == 0:
@@ -69,7 +78,7 @@ def play_game(game: 'Othello game board', first_player: 'piece type') -> None:
         print('TURN: {}'.format(players[current_player]))
 
         while True:
-            player_move = None
+            # player_move = None
             # if current_player == othello.BLACK_PIECE:
             row, col = game.get_ai_move(current_player)
             row += 1
@@ -77,7 +86,7 @@ def play_game(game: 'Othello game board', first_player: 'piece type') -> None:
             print('[AI] {} {}'.format(row, col))
             player_move = row, col
             # else:
-                # player_move = _get_player_move()
+            # player_move = _get_player_move()
 
             if player_move != None:
                 row, col = player_move

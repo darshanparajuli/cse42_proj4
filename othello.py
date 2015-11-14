@@ -6,87 +6,111 @@ BLACK_PIECE = 1
 WHITE_PIECE = 2
 
 
-class Cell:
+class _Cell:
 
     def __init__(self, row, col) -> None:
-        self.row = row
-        self.col = col
-        self.piece = None
+        self._row = row
+        self._col = col
+        self._piece = None
 
     def is_empty(self) -> bool:
-        return self.piece == None
+        return self._piece == None
 
     def get_piece(self) -> 'piece type':
-        return self.piece
+        return self._piece
 
     def set_piece(self, piece) -> None:
-        self.piece = piece
+        self._piece = piece
 
     def get_row(self) -> int:
-        return self.row
+        return self._row
 
     def get_col(self) -> int:
-        return self.col
+        return self._col
 
     def get_west(self) -> '(row, col)':
-        return (self.row, self.col - 1)
+        return self._row, self._col - 1
 
     def get_east(self) -> '(row, col)':
-        return (self.row, self.col + 1)
+        return self._row, self._col + 1
 
     def get_north(self) -> '(row, col)':
-        return (self.row - 1, self.col)
+        return self._row - 1, self._col
 
     def get_south(self) -> '(row, col)':
-        return (self.row + 1, self.col)
+        return self._row + 1, self._col
 
     def get_northwest(self) -> '(row, col)':
-        return (self.row - 1, self.col - 1)
+        return self._row - 1, self._col - 1
 
     def get_northeast(self) -> '(row, col)':
-        return (self.row - 1, self.col + 1)
+        return self._row - 1, self._col + 1
 
     def get_southwest(self) -> '(row, col)':
-        return (self.row + 1, self.col - 1)
+        return self._row + 1, self._col - 1
 
     def get_southeast(self) -> '(row, col)':
-        return (self.row + 1, self.col + 1)
+        return self._row + 1, self._col + 1
 
     def __str__(self) -> None:
-        return 'r: {}, c: {}'.format(self.row, self.col)
+        return 'r: {}, c: {}'.format(self._row, self._col)
 
     def __eq__(self, other):
-        return other and self.row == other.row and self.col == other.col and self.piece == other.piece
+        return other and self._row == other._row and self._col == other._col and self._piece == other._piece
 
     def __hash__(self):
-        return hash(self.row) ^ hash(self.col) ^ hash(self.piece)
+        return hash(self._row) ^ hash(self._col) ^ hash(self._piece)
+
+
+class OthelloBoardOptions:
+
+    def __init__(self) -> None:
+        self._row_count = 8
+        self._col_count = 8
+        self._first_turn = BLACK_PIECE
+        self._top_left_piece = WHITE_PIECE
+        self._high_count_wins = True
+
+    def set_row_count(self, row_count: int) -> None:
+        self._row_count = row_count
+
+    def set_col_count(self, col_count: int) -> None:
+        self._col_count = col_count
+
+    def set_high_count_wins(self, high_count_wins: bool) -> None:
+        self._high_count_wins = high_count_wins
+
+    def set_top_left_piece(self, top_left_piece: 'piece type') -> None:
+        self._top_left_piece = top_left_piece
+
+    def set_first_turn(self, first_turn: 'piece type') -> None:
+        self._first_turn = first_turn
 
 
 class OthelloBoard:
 
-    def __init__(self, row_count: int, col_count: int, top_left: int, high_count_wins: bool,
-                first_turn: 'piece type') -> None:
-        self.row_count = row_count
-        self.col_count = col_count
-        self.board = self._init_board(top_left)
-        self.high_count_wins = high_count_wins
-        self.possible_valid_moves = self._get_all_possible_valid_moves(first_turn)
-        self.piece_count = self._get_piece_count()
+    def __init__(self, board_options: OthelloBoardOptions) -> None:
+        self._row_count = board_options._row_count
+        self._col_count = board_options._col_count
+        self._board = self._init_board(board_options._top_left_piece)
+        self._high_count_wins = board_options._high_count_wins
+        self._possible_valid_moves = self._get_all_possible_valid_moves(board_options._first_turn)
+        self._piece_count = self._get_piece_count()
 
         # For debug purposes
         self.print_row_col_labels = False
 
     def get_row_count(self) -> int:
-        return self.row_count
+        return self._row_count
 
     def get_col_count(self) -> int:
-        return self.col_count
+        return self._col_count
 
     def _init_board(self, top_left) -> [[int]]:
-        board = [[Cell(row, col) for col in range(self.col_count)] for row in range(self.row_count)]
+        board = [[_Cell(row, col) for col in range(self._col_count)] for row in range(self._row_count)]
 
-        r = int(self.row_count / 2 - 1)
-        c = int(self.col_count / 2 - 1)
+        r = int(self._row_count / 2 - 1)
+        c = int(self._col_count / 2 - 1)
         if top_left == WHITE_PIECE:
             board[r][c].set_piece(WHITE_PIECE)
             board[r][c + 1].set_piece(BLACK_PIECE)
@@ -102,15 +126,15 @@ class OthelloBoard:
 
     def print_board(self) -> None:
         if self.print_row_col_labels:
-            print(' '.ljust(len(str(self.row_count))), end = ' ')
-            for c in range(self.col_count):
-                print(str(c + 1).ljust(len(str(self.col_count))), end = ' ')
+            print(' '.ljust(len(str(self._row_count))), end = ' ')
+            for c in range(self._col_count):
+                print(str(c + 1).ljust(len(str(self._col_count))), end = ' ')
             print()
-        for r in range(self.row_count):
+        for r in range(self._row_count):
             if self.print_row_col_labels:
-                print('{}'.format(r + 1).ljust(len(str(self.row_count))), end = ' ')
-            for c in range(self.col_count):
-                cell = self.board[r][c]
+                print('{}'.format(r + 1).ljust(len(str(self._row_count))), end = ' ')
+            for c in range(self._col_count):
+                cell = self._board[r][c]
                 cell_str = None
                 if cell.get_piece() == BLACK_PIECE:
                     cell_str = 'B'
@@ -121,18 +145,18 @@ class OthelloBoard:
 
                 ljust_val = None
                 if self.print_row_col_labels:
-                    ljust_val = len(str(self.col_count))
+                    ljust_val = len(str(self._col_count))
                 else:
                     ljust_val = 0
                 print(cell_str.ljust(ljust_val), end = ' ')
             print()
 
-    def _get_cell(self, pos: '(row, col)') -> Cell:
+    def _get_cell(self, pos: '(row, col)') -> _Cell:
         row = pos[0]
         col = pos[1]
-        if row >= 0 and row < self.row_count:
-            if col >= 0 and col < self.col_count:
-                return self.board[row][col]
+        if row >= 0 and row < self._row_count:
+            if col >= 0 and col < self._col_count:
+                return self._board[row][col]
         return None
 
     def get_opponent_piece_type(self, piece_type: 'piece type') -> 'piece type':
@@ -143,33 +167,33 @@ class OthelloBoard:
 
     def place_piece(self, piece_type: 'piece type', row: int, col: int) -> bool:
         key = self._flatten_row_col(row, col)
-        if key in self.possible_valid_moves:
-            self.board[row][col].set_piece(piece_type)
+        if key in self._possible_valid_moves:
+            self._board[row][col].set_piece(piece_type)
 
-            for captured_cell in self.possible_valid_moves[key][1]:
+            for captured_cell in self._possible_valid_moves[key][1]:
                 captured_cell.set_piece(piece_type)
 
-            self.piece_count = self._get_piece_count()
+            self._piece_count = self._get_piece_count()
             self.skip_player_move(piece_type)
             return True
         return False
 
     def skip_player_move(self, piece_type: 'piece type') -> None:
         opponent_piece = self.get_opponent_piece_type(piece_type)
-        self.possible_valid_moves = self._get_all_possible_valid_moves(opponent_piece)
-        # OthelloBoard._print_possible_moves(self.possible_valid_moves)
+        self._possible_valid_moves = self._get_all_possible_valid_moves(opponent_piece)
+        # OthelloBoard._print_possible_moves(self._possible_valid_moves)
 
     def get_possible_valid_moves_num(self, piece_type = None) -> int:
         if piece_type == None:
-            return len(self.possible_valid_moves.keys())
+            return len(self._possible_valid_moves.keys())
         else:
             return len(self._get_all_possible_valid_moves(piece_type).keys())
 
     def check_win(self) -> 'BLACK_PIECE, WHITE_PIECE or None':
-        b_count = self.piece_count[0]
-        w_count = self.piece_count[1]
+        b_count = self._piece_count[0]
+        w_count = self._piece_count[1]
 
-        if self.high_count_wins:
+        if self._high_count_wins:
             if b_count > w_count:
                 return BLACK_PIECE
             elif b_count < w_count:
@@ -186,16 +210,16 @@ class OthelloBoard:
 
     def get_piece_count(self, piece_type: 'piece type') -> int:
         if piece_type == BLACK_PIECE:
-            return self.piece_count[0]
+            return self._piece_count[0]
         else:
-            return self.piece_count[1]
+            return self._piece_count[1]
 
     def _get_piece_count(self) -> '(black_piece_count, white_piece_count)':
         b_count = 0
         w_count = 0
-        for r in range(self.row_count):
-            for c in range(self.col_count):
-                cell = self.board[r][c]
+        for r in range(self._row_count):
+            for c in range(self._col_count):
+                cell = self._board[r][c]
                 if cell.get_piece() == BLACK_PIECE:
                     b_count += 1
                 elif cell.get_piece() == WHITE_PIECE:
@@ -213,11 +237,11 @@ class OthelloBoard:
             for captured_cell in captured_cells:
                 print('    {}'.format(str(captured_cell)))
 
-    def _get_flattened_cell_pos(self, cell: Cell) -> int:
+    def _get_flattened_cell_pos(self, cell: _Cell) -> int:
         return self._flatten_row_col(cell.get_row(), cell.get_col())
 
     def _flatten_row_col(self, row: int, col: int) -> int:
-        return row * self.col_count + col
+        return row * self._col_count + col
 
     # For debug purposes... and for fun xD
     def get_ai_move(self, piece_type: 'piece type') -> '(row, col)':
@@ -237,9 +261,9 @@ class OthelloBoard:
     def _get_all_possible_valid_moves(self, piece) -> dict:
         possible_valid_moves = {}
 
-        for r in range(self.row_count):
-            for c in range(self.col_count):
-                cell = self.board[r][c]
+        for r in range(self._row_count):
+            for c in range(self._col_count):
+                cell = self._board[r][c]
                 if cell.get_piece() != piece:
                     continue
 
