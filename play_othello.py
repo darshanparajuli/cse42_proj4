@@ -1,4 +1,3 @@
-import time
 import othello
 
 
@@ -63,9 +62,6 @@ def play_game(game: 'Othello game board', first_turn: 'piece type') -> None:
         print('B: {}  W: {}'.format(b_count, w_count))
         game.print_board()
 
-        if b_count == 0 or w_count == 0:
-            time.sleep(5)
-
         opponent = game.get_opponent_piece_type(current_player)
         if game.get_possible_valid_moves_num() == 0:
             if game.get_possible_valid_moves_num(opponent) == 0:
@@ -83,7 +79,7 @@ def play_game(game: 'Othello game board', first_turn: 'piece type') -> None:
             row, col = game.get_ai_move(current_player)
             row += 1
             col += 1
-            print('[AI] {} {}'.format(row, col))
+            print('{} {}'.format(row, col))
             player_move = row, col
             # else:
             # player_move = _get_player_move()

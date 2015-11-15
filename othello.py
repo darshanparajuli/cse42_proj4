@@ -106,7 +106,7 @@ class OthelloBoard:
     def get_col_count(self) -> int:
         return self._col_count
 
-    def _init_board(self, top_left) -> [[int]]:
+    def _init_board(self, top_left) -> [[_Cell]]:
         board = [[_Cell(row, col) for col in range(self._col_count)] for row in range(self._row_count)]
 
         r = int(self._row_count / 2 - 1)
