@@ -12,7 +12,7 @@ do
     then
         col=$(( $col + 1 ))
     fi
-    echo $row$'\n'$col$'\n'B$'\n'W$'\n'\>$'\n' | /home/darshan/python3.4.3/bin/python3.4 play_othello.py
+    echo $row$'\n'$col$'\n'B$'\n'W$'\n'\>$'\n' | $1 $2
     # cat input.txt | /home/darshan/python3.4.3/bin/python3.4 play_othello.py
     echo row: $row col: $col
     sleep 0.5
