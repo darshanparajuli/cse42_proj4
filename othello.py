@@ -184,10 +184,13 @@ class OthelloBoard:
         # OthelloBoard._print_possible_moves(self._possible_valid_moves)
 
     def get_possible_valid_moves_num(self, piece_type = None) -> int:
-        if piece_type == None:
-            return len(self._possible_valid_moves.keys())
+        if self._piece_count[0] == 0 or self._piece_count[1] == 0:
+            return 0
         else:
-            return len(self._get_all_possible_valid_moves(piece_type).keys())
+            if piece_type == None:
+                return len(self._possible_valid_moves.keys())
+            else:
+                return len(self._get_all_possible_valid_moves(piece_type).keys())
 
     def check_win(self) -> 'BLACK_PIECE, WHITE_PIECE or None':
         b_count = self._piece_count[0]
