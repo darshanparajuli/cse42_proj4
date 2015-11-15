@@ -127,7 +127,6 @@ def test_main() -> None:
     game = othello.OthelloBoard(options)
 
     play_game(game, first_turn)
-    time.sleep(0.5)
 
 
 if __name__ == '__main__':
