@@ -1,4 +1,6 @@
 import othello
+import time
+import random
 
 
 def _get_input_in_range(min: int, max: int) -> int:
@@ -106,5 +108,28 @@ def main() -> None:
     play_game(game, first_player)
 
 
+def test_main() -> None:
+    print('FULL')
+    options = othello.OthelloBoardOptions()
+    options.set_row_count(random.randrange(4, 16, 2))
+    options.set_col_count(random.randrange(4, 16, 2))
+
+    first_turn = random.choice('BW')
+    top_left = random.choice('BW')
+    win_condition = random.choice('><')
+
+    first_turn = othello.BLACK_PIECE if first_turn == 'B' else othello.WHITE_PIECE
+
+    options.set_first_turn(first_turn)
+    options.set_top_left_piece(othello.BLACK_PIECE if top_left == 'B' else othello.WHITE_PIECE)
+    options.set_high_count_wins(win_condition == '>')
+
+    game = othello.OthelloBoard(options)
+
+    play_game(game, first_turn)
+    time.sleep(0.5)
+
+
 if __name__ == '__main__':
-    main()
+    while True:
+        test_main()
