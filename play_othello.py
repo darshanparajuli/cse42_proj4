@@ -96,7 +96,7 @@ def play_game(game: 'Othello game board', first_turn: 'piece type') -> None:
     winning_player = 'NONE'
     if winner == othello.BLACK_PIECE:
         winning_player = 'B'
-    else:
+    elif winner == othello.WHITE_PIECE:
         winning_player = 'W'
     print('WINNER: {}'.format(winning_player))
 
