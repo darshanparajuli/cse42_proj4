@@ -36,8 +36,8 @@ def _get_user_input_as_int() -> int:
 def init_game() -> 'Othello game board, first player piece type':
     print('FULL')
     options = othello.OthelloBoardOptions()
-    options.set_row_count(_get_input_in_range(4, 16))
-    options.set_col_count(_get_input_in_range(4, 16))
+    options.set_row_count(_get_input_in_range(4, 512))
+    options.set_col_count(_get_input_in_range(4, 512))
 
     first_turn = _get_matching_user_input(('W', 'B'))
     top_left = _get_matching_user_input(('W', 'B'))
@@ -109,26 +109,29 @@ def main() -> None:
 
 
 def test_main() -> None:
-    print('FULL')
-    options = othello.OthelloBoardOptions()
-    options.set_row_count(random.randrange(4, 16, 2))
-    options.set_col_count(random.randrange(4, 16, 2))
+    while True:
+        for row in range(4, 18, 2):
+            for col in range(4, 18, 2):
+                print('FULL')
+                options = othello.OthelloBoardOptions()
+                options.set_row_count(row)
+                options.set_col_count(col)
 
-    first_turn = random.choice('BW')
-    top_left = random.choice('BW')
-    win_condition = random.choice('><')
+                first_turn = random.choice('BW')
+                top_left = random.choice('BW')
+                win_condition = random.choice('><')
 
-    first_turn = othello.BLACK_PIECE if first_turn == 'B' else othello.WHITE_PIECE
+                first_turn = othello.BLACK_PIECE if first_turn == 'B' else othello.WHITE_PIECE
 
-    options.set_first_turn(first_turn)
-    options.set_top_left_piece(othello.BLACK_PIECE if top_left == 'B' else othello.WHITE_PIECE)
-    options.set_high_count_wins(win_condition == '>')
+                options.set_first_turn(first_turn)
+                options.set_top_left_piece(othello.BLACK_PIECE if top_left == 'B' else othello.WHITE_PIECE)
+                options.set_high_count_wins(win_condition == '>')
 
-    game = othello.OthelloBoard(options)
+                game = othello.OthelloBoard(options)
 
-    play_game(game, first_turn)
+                play_game(game, first_turn)
 
 
 if __name__ == '__main__':
-    while True:
-        test_main()
+    main()
+    # test_main()

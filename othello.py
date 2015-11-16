@@ -231,7 +231,7 @@ class OthelloBoard:
         return b_count, w_count
 
     # For debug purposes
-    def _print_possible_moves(possible_valid_moves) -> None:
+    def _print_possible_moves(possible_valid_moves: {}) -> None:
         print('possible valid moves: ')
         for key in possible_valid_moves.keys():
             valid_cell, captured_cells = possible_valid_moves[key]
@@ -250,19 +250,26 @@ class OthelloBoard:
     def get_ai_move(self, piece_type: 'piece type') -> '(row, col)':
         possible_valid_moves = self._get_all_possible_valid_moves(piece_type)
         keys = list(possible_valid_moves.keys())
-        keys.sort(key=lambda k: len(possible_valid_moves[k][1]), reverse=True)
+        keys.sort(key = lambda k: len(possible_valid_moves[k][1]), reverse = True)
         keys_highest_captures = []
         highest_captures = len(possible_valid_moves[keys[0]][1])
         for k in keys:
             if len(possible_valid_moves[k][1]) == highest_captures:
                 keys_highest_captures.append(k)
-        # for k in keys:
-        #     print(len(possible_valid_moves[k][1]))
         valid_cell = possible_valid_moves[keys_highest_captures[random.randint(0, len(keys_highest_captures) - 1)]][0]
         return valid_cell.get_row(), valid_cell.get_col()
 
-    def _get_all_possible_valid_moves(self, piece) -> dict:
+    def _get_all_possible_valid_moves(self, piece: 'piece type') -> {}:
         possible_valid_moves = {}
+
+        get_east = lambda c: c.get_east()
+        get_west = lambda c: c.get_west()
+        get_north = lambda c: c.get_north()
+        get_south = lambda c: c.get_south()
+        get_northeast = lambda c: c.get_northeast()
+        get_northwest = lambda c: c.get_northwest()
+        get_southeast = lambda c: c.get_southeast()
+        get_southwest = lambda c: c.get_southwest()
 
         for r in range(self._row_count):
             for c in range(self._col_count):
@@ -271,14 +278,14 @@ class OthelloBoard:
                     continue
 
                 valid_cells = []
-                valid_cells.append(self._get_possible_valid_moves(cell, lambda c: c.get_east()))
-                valid_cells.append(self._get_possible_valid_moves(cell, lambda c: c.get_west()))
-                valid_cells.append(self._get_possible_valid_moves(cell, lambda c: c.get_north()))
-                valid_cells.append(self._get_possible_valid_moves(cell, lambda c: c.get_south()))
-                valid_cells.append(self._get_possible_valid_moves(cell, lambda c: c.get_northeast()))
-                valid_cells.append(self._get_possible_valid_moves(cell, lambda c: c.get_northwest()))
-                valid_cells.append(self._get_possible_valid_moves(cell, lambda c: c.get_southeast()))
-                valid_cells.append(self._get_possible_valid_moves(cell, lambda c: c.get_southwest()))
+                valid_cells.append(self._get_possible_valid_moves(cell, get_east))
+                valid_cells.append(self._get_possible_valid_moves(cell, get_west))
+                valid_cells.append(self._get_possible_valid_moves(cell, get_north))
+                valid_cells.append(self._get_possible_valid_moves(cell, get_south))
+                valid_cells.append(self._get_possible_valid_moves(cell, get_northeast))
+                valid_cells.append(self._get_possible_valid_moves(cell, get_northwest))
+                valid_cells.append(self._get_possible_valid_moves(cell, get_southeast))
+                valid_cells.append(self._get_possible_valid_moves(cell, get_southwest))
 
                 for element in valid_cells:
                     if element != None:
@@ -292,10 +299,10 @@ class OthelloBoard:
 
         return possible_valid_moves
 
-    def _get_possible_valid_moves(self, cell, dir_function) -> '(valid cell, marked cells)':
+    def _get_possible_valid_moves(self, cell: _Cell, f: 'direction function') -> '(valid cell, marked cells)':
         captured_cells = []
         piece_type = cell.get_piece()
-        temp_cell = self._get_cell(dir_function(cell))
+        temp_cell = self._get_cell(f(cell))
         while temp_cell != None:
             if temp_cell.is_empty():
                 captured_cells.append(temp_cell)
@@ -305,7 +312,7 @@ class OthelloBoard:
 
             if temp_cell.get_piece() != piece_type:
                 captured_cells.append(temp_cell)
-            temp_cell = self._get_cell(dir_function(temp_cell))
+            temp_cell = self._get_cell(f(temp_cell))
 
         if len(captured_cells) > 1:
             top = captured_cells.pop()
